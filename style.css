@@ -8,6 +8,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   padding: 20px;
   margin: 0;
 }
@@ -21,10 +23,8 @@ h1 {
 #days {
   display: grid;
   grid-template-columns: repeat(7, 80px); /* 7 colonnes */
-  grid-template-rows: repeat(3, 80px);   /* 3 lignes */
   gap: 15px;
   justify-content: center;
-  text-align: center;
 }
 
 /* Chaque case */
@@ -38,7 +38,7 @@ h1 {
   justify-content: center;
   font-size: 16px;
   font-weight: 600;
-  color: #2b2f5a; /* le texte “jour X” */
+  color: #2b2f5a; /* texte Jour X */
   cursor: pointer;
 }
 
