@@ -1,110 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
 body {
-  background-color: #2b2f5a;
   font-family: 'Montserrat', sans-serif;
-  color: white;
+  background: #2b2f5a;
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  margin: 0;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 10px;
 }
 
 .intro {
-  text-align: center;
   max-width: 600px;
+  text-align: center;
   margin-bottom: 20px;
 }
 
-.form-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
+input[type="text"] {
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #c19751;
+  margin-bottom: 10px;
+  width: 200px;
+  text-align: center;
 }
 
-.custom-date {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 16px;
-  color: #ffffff;
-  background-color: #2b2f5a;
-  border: 2px solid #c19751;
+.checkbox-group {
+  margin-bottom: 10px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  accent-color: #fff; /* boutons blancs */
+  margin-right: 5px;
+}
+
+.emoji-btn, .color-btn {
+  width: 50px;
+  height: 50px;
   border-radius: 12px;
-  padding: 8px 12px;
-  width: 220px;
-  text-align: center;
+  margin: 5px;
+  font-size: 28px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.emoji-btn.selected, .color-btn.selected {
+  border: 4px solid #c19751; /* liseré doré */
+}
+
+.days-grid {
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.dayBox {
+  width: 80px;
+  height: 80px;
+  background: #fff;
+  color: #2b2f5a;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.selection-options {
-  display: flex;
-  gap: 15px;
-}
-
-.selection-options input[type="radio"] {
-  accent-color: #ffffff;
-}
-
 #emojiMenu, #colorMenu {
-  display: grid;
-  grid-template-columns: repeat(5, 50px);
-  gap: 10px;
-  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
 }
 
 #emojiMenu.hidden, #colorMenu.hidden {
   display: none;
 }
 
-.emoji-btn, .color-picker {
-  width: 50px;
-  height: 50px;
+#generateBtn, #downloadBtn {
+  margin-top: 15px;
+  padding: 12px 20px;
   border-radius: 12px;
-  border: 2px solid #fff;
-  cursor: pointer;
-}
-
-.color-picker {
-  padding: 0;
-}
-
-#generateBtn {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 18px;
-  background-color: #c19751;
-  color: #2b2f5a;
   border: none;
-  border-radius: 12px;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-#days {
-  display: grid;
-  grid-template-columns: repeat(7, 80px);
-  gap: 15px;
-  justify-content: center;
-}
-
-.dayBox {
-  width: 80px;
-  height: 80px;
-  background: #ffffff;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #c19751;
+  color: #fff;
   font-weight: 600;
-  color: #2b2f5a;
   cursor: pointer;
-  border: 2px solid transparent;
 }
 
-.dayBox.selected {
-  border: 2px solid #c19751;
+@media (max-width: 600px) {
+  .days-grid {
+    grid-template-columns: repeat(3, 80px);
+  }
+}
+
+@media (min-width: 601px) {
+  .days-grid {
+    grid-template-columns: repeat(7, 80px);
+  }
 }
