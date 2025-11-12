@@ -10,8 +10,8 @@
 
   <!-- Introduction -->
   <div id="intro">
-    <p>Bienvenue dans votre <strong>Vision 21 Jours</strong>. Pendant 21 jours, vous allez prendre un moment chaque jour pour symboliser un événement important de votre journée, ou ce que vous en retenez le plus.</p>
-    <p>Pour cela, vous pouvez choisir jusqu'à 5 éléments sous forme d’émojis ou de couleurs prédéfinies. Cette pratique vous aidera à prendre du recul et à observer vos tendances ou émotions.</p>
+    <p>Bienvenue dans ta <strong>Vision 21 Jours</strong> ! Pendant 21 jours, prends un moment chaque jour pour symboliser un événement important de ta journée ou ce que tu en retiens.</p>
+    <p>Tu peux choisir jusqu'à 5 éléments : emojis ou couleurs. Cela t'aidera à observer tes émotions et tendances. L'utilisation de 5 items max te donnera une vue globale et claire.</p>
   </div>
 
   <!-- Formulaire de configuration -->
@@ -19,14 +19,14 @@
     <label for="startDate">Date de début :</label>
     <input type="date" id="startDate">
 
-    <p>Choisissez votre mode de symbolisation :</p>
+    <p>Choisis ton mode de symbolisation :</p>
     <input type="radio" id="modeEmoji" name="mode" value="emoji" checked>
     <label for="modeEmoji">Émojis</label>
     <input type="radio" id="modeColor" name="mode" value="color">
     <label for="modeColor">Couleurs</label>
 
     <div id="emojiInputs">
-      <p>Personnalisez vos 5 émojis :</p>
+      <p>Exemples d’emojis (tu peux les personnaliser) :</p>
       <input type="text" id="emojiInput1" maxlength="2" value="🏆">
       <input type="text" id="emojiInput2" maxlength="2" value="🌞">
       <input type="text" id="emojiInput3" maxlength="2" value="❤️">
@@ -35,7 +35,7 @@
     </div>
 
     <div id="colorInputs" class="hidden">
-      <p>Choisissez vos couleurs :</p>
+      <p>Exemples de couleurs :</p>
       <input type="color" id="color1" value="#000000">
       <input type="color" id="color2" value="#ff0000">
       <input type="color" id="color3" value="#ffff00">
@@ -45,6 +45,13 @@
 
     <button id="startBtn">Commencer ma Vision 21 Jours</button>
   </div>
+
+  <!-- Instructions -->
+  <p class="instructions">
+    Pour insérer un emoji depuis ton clavier :<br>
+    <strong>Windows</strong> : touche Windows + point (.)<br>
+    <strong>Mac</strong> : Ctrl + Cmd + espace
+  </p>
 
   <!-- Container des jours -->
   <div id="days" class="hidden"></div>
