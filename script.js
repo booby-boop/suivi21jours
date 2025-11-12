@@ -11,7 +11,7 @@ const colorInputs = document.getElementById('colorInputs');
 
 let currentDayBox = null;
 
-// bascule entre emoji et couleur
+// bascule emoji / couleur
 document.getElementById('modeEmoji').addEventListener('change', () => {
   emojiInputs.classList.remove('hidden');
   colorInputs.classList.add('hidden');
@@ -21,23 +21,18 @@ document.getElementById('modeColor').addEventListener('change', () => {
   colorInputs.classList.remove('hidden');
 });
 
-// démarrer la Vision 21 Jours
+// démarrage Vision 21 Jours
 startBtn.addEventListener('click', () => {
-  // récupérer date de début
-  const startDate = document.getElementById('startDate').value;
-
-  // récupérer emojis personnalisés
+  // récupérer emojis / couleurs personnalisés
   for(let i=1;i<=5;i++){
     EMOJIS[i-1] = document.getElementById(`emojiInput${i}`).value || EMOJIS[i-1];
     COLORS[i-1] = document.getElementById(`color${i}`).value || COLORS[i-1];
   }
 
-  // masquer le formulaire
   configForm.classList.add('hidden');
-  // afficher la grille
   daysDiv.classList.remove('hidden');
 
-  // créer les 21 cases
+  // créer 21 cases
   daysDiv.innerHTML = '';
   for (let i = 1; i <= DAYS; i++) {
     const box = document.createElement('div');
@@ -46,7 +41,8 @@ startBtn.addEventListener('click', () => {
     box.addEventListener('click', () => {
       currentDayBox = box;
       emojiMenu.classList.remove('hidden');
-      // selon le mode choisi
+
+      // bascule les boutons selon mode
       if(document.getElementById('modeColor').checked){
         EMOJIS = COLORS;
         for(let j=1;j<=5;j++){
@@ -58,7 +54,7 @@ startBtn.addEventListener('click', () => {
   }
 });
 
-// choisir un émoji / couleur
+// choisir un emoji / couleur
 for(let i=1;i<=5;i++){
   document.getElementById(`emoji${i}`).addEventListener('click', () => {
     if(currentDayBox){
