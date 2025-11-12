@@ -1,156 +1,76 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-
 body {
+  font-family: 'Segoe UI', sans-serif;
   background-color: #2b2f5a;
-  font-family: 'Montserrat', sans-serif;
   color: white;
+  text-align: center;
   margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
+  padding: 0;
 }
 
 .container {
-  max-width: 700px;
-  text-align: center;
+  padding: 2rem;
+  max-width: 600px;
+  margin: auto;
 }
 
 h1 {
-  font-weight: 600;
-  margin-bottom: 15px;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
 }
 
-h1 span {
-  color: #c19751;
-}
-
-.intro {
+p {
   font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 30px;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
 }
 
-form {
-  margin-bottom: 30px;
+.options, .startDate {
+  margin: 1rem 0;
 }
 
 label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #c19751;
+  margin: 0 0.5rem;
 }
 
-input[type="date"] {
-  font-family: 'Montserrat', sans-serif;
-  padding: 10px 15px;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-  text-align: center;
-  background: white;
-  color: #2b2f5a;
-  cursor: pointer;
-}
-
-.error {
-  display: block;
-  color: #ff9ff3;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  height: 18px;
-}
-
-.start-btn {
-  margin-top: 15px;
-  background-color: #c19751;
-  color: white;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.start-btn:hover {
-  transform: scale(1.05);
-}
-
-.hidden {
-  display: none;
-}
-
-#days {
+.days {
   display: grid;
-  grid-template-columns: repeat(7, 80px);
-  gap: 15px;
-  justify-content: center;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-top: 1.5rem;
 }
 
 .dayBox {
-  width: 80px;
-  height: 80px;
-  background: white;
-  color: #2b2f5a;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 1rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  font-weight: bold;
+  transition: transform 0.2s, background-color 0.2s;
 }
 
 .dayBox:hover {
   transform: scale(1.05);
+  background-color: rgba(255,255,255,0.2);
 }
 
-.menu {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #fff;
-  color: #2b2f5a;
-  border-radius: 20px;
-  padding: 15px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+.choices {
+  margin-top: 1rem;
 }
 
-.menu-section {
-  margin-bottom: 15px;
-}
-
-.menu-section h3 {
-  color: #2b2f5a;
-  margin-bottom: 10px;
-}
-
-.emoji-grid, .color-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  justify-items: center;
-}
-
-.emoji-grid button, .color-grid button {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+.color-btn, .emoji-btn {
+  margin: 0.3rem;
   border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
 }
 
-.emoji-grid button {
-  background: #fff;
-  font-size: 22px;
+.color-btn {
+  border: 2px solid white;
+}
+
+.hidden {
+  display: none;
 }
