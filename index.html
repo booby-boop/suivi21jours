@@ -24,36 +24,38 @@
     </p>
 
     <form id="configForm" class="config" autocomplete="off">
+      <!-- date field (Flatpickr will attach) -->
       <input id="startDate" class="custom-date" placeholder="Date de départ" />
 
+      <!-- radios -->
       <div class="radio-group" role="radiogroup" aria-label="Mode">
         <label class="radio-label"><input type="radio" name="mode" value="emoji"> Émojis</label>
         <label class="radio-label"><input type="radio" name="mode" value="color"> Couleurs</label>
         <label class="radio-label"><input type="radio" name="mode" value="both"> Les deux</label>
       </div>
 
-      <!-- emoji palette -->
-      <div id="emojiEditor" class="editor hidden">
+      <!-- emoji palette (editable BEFORE generation) -->
+      <div id="emojiEditor" class="editor">
         <div class="editor-row">
-          <input class="emoji-input" maxlength="2" value="🏆" title="Tape ou colle un emoji" />
-          <input class="emoji-input" maxlength="2" value="🌞" />
-          <input class="emoji-input" maxlength="2" value="❤️" />
-          <input class="emoji-input" maxlength="2" value="🌩️" />
-          <input class="emoji-input" maxlength="2" value="⭐" />
+          <input class="emoji-input" maxlength="1" value="🏆" title="Tape ou colle un emoji" />
+          <input class="emoji-input" maxlength="1" value="🌞" />
+          <input class="emoji-input" maxlength="1" value="❤️" />
+          <input class="emoji-input" maxlength="1" value="🌩️" />
+          <input class="emoji-input" maxlength="1" value="⭐" />
         </div>
-        <p class="editor-hint">Personnalise d'abord tes emojis.</p>
+        <p class="editor-hint">Personnalise tes émojis avant de générer.</p>
       </div>
 
-      <!-- color palette -->
+      <!-- color palette (editable BEFORE generation) -->
       <div id="colorEditor" class="editor hidden">
         <div class="editor-row">
           <input type="color" class="color-picker" value="#1d1d1b" />
           <input type="color" class="color-picker" value="#e6007e" />
-          <input type="color" class="color-picker" value="#c19751" />
+          <input type="color" class="color-picker" value="#ffde00" />
           <input type="color" class="color-picker" value="#00a19a" />
           <input type="color" class="color-picker" value="#36a9e1" />
         </div>
-        <p class="editor-hint">Personnalise d'abord tes couleurs.</p>
+        <p class="editor-hint">Personnalise tes couleurs avant de générer.</p>
       </div>
 
       <div class="actions">
@@ -62,12 +64,12 @@
       </div>
     </form>
 
-    <p id="instructionText" class="instruction hidden">Clique sur un jour pour le sélectionner, puis clique sur une couleur ou un emoji pour le faire apparaître.</p>
+    <p class="instruction hidden">Clique sur un jour pour le sélectionner, puis clique sur une couleur et ou un emoji pour le faire apparaître.</p>
 
     <section id="daysContainer" class="days-container grid" aria-live="polite"></section>
   </main>
 
-  <!-- libs -->
+  <!-- libs: Flatpickr then html2canvas -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
