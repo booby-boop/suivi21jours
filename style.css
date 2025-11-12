@@ -1,16 +1,14 @@
-/* Montserrat everywhere */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;1,400&display=swap');
 
 :root{
   --bg:#2b2f5a;
   --gold:#c19751;
+  --gold-strong:#ffde00;
   --white:#ffffff;
   --dark:#1d1d1b;
 }
 
-/* RESET-ish */
 *{box-sizing:border-box}
-html,body{height:100%}
 body{
   margin:0;
   font-family:"Montserrat",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
@@ -20,7 +18,6 @@ body{
   -moz-osx-font-smoothing:grayscale;
 }
 
-/* Layout */
 .container{
   max-width:920px;
   margin:0 auto;
@@ -31,29 +28,13 @@ body{
   text-align:center;
 }
 
-h1{
-  margin:0 0 12px 0;
-  font-size:1.6rem;
-  line-height:1.1;
-}
-.intro{
-  margin:0 0 18px 0;
-  max-width:720px;
-  font-size:1rem;
-  line-height:1.6;
-}
+h1{ margin:0 0 12px 0; font-size:1.6rem; line-height:1.1; }
+.intro{ margin:0 0 18px 0; max-width:720px; font-size:1rem; line-height:1.6; }
 
-/* Config form */
-.config{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:10px;
-  margin-bottom:14px;
-}
+/* CONFIG */
+.config{ width:100%; display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:12px; }
 
-/* Date field (Flatpickr will attach) */
+/* Date field - styled, italic placeholder */
 .custom-date{
   width:260px;
   padding:11px 14px;
@@ -62,207 +43,98 @@ h1{
   background:transparent;
   color:var(--white);
   font-family:"Montserrat",sans-serif;
-  font-style:italic; /* italic placeholder style */
+  font-style:italic;
   text-align:center;
   font-size:15px;
   outline:none;
 }
-
-/* override native focus outline with gold glow */
 .custom-date:focus{
-  box-shadow:0 0 0 4px rgba(193,151,81,0.18);
+  box-shadow:0 0 0 6px rgba(193,151,81,0.14);
   border-color:var(--gold);
 }
 
-/* Radios: visually simple, white accent */
-.radio-group{
-  display:flex;
-  gap:14px;
-  align-items:center;
-  justify-content:center;
-}
-.radio-label{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:15px;
-  color:var(--white);
-  cursor:pointer;
-}
-.radio-label input[type="radio"]{
-  /* keep native look but white accent when supported */
-  accent-color: var(--white);
-  width:18px;
-  height:18px;
-}
+/* Flatpickr overrides - calendar styled for dark theme */
+.flatpickr-calendar { background:var(--bg); color:var(--white); border:2px solid var(--gold); border-radius:12px; }
+.flatpickr-month, .flatpickr-weekdays, .flatpickr-weekday{ color:var(--white); }
+.flatpickr-day{ color:var(--white); }
+.flatpickr-day.today{ box-shadow: none; border-radius:50%; background:transparent; color:var(--white); }
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background: var(--gold); color:var(--bg); border-radius:50%; }
 
-/* Editors (emoji + color) BEFORE generation */
-.editor{
-  width:100%;
-  max-width:720px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-  margin-top:6px;
-}
-.editor-row{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  align-items:center;
-}
+/* Radios */
+.radio-group{ display:flex; gap:14px; align-items:center; justify-content:center; }
+.radio-label{ display:flex; align-items:center; gap:8px; font-size:15px; color:var(--white); cursor:pointer; }
+.radio-label input[type="radio"]{ accent-color: var(--white); width:18px; height:18px; }
 
-/* Emoji inputs: editable BEFORE generation, cursor visible */
+/* Editors before generation */
+.editor{ width:100%; max-width:720px; display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:6px; }
+.editor-row{ display:flex; gap:10px; justify-content:center; align-items:center; }
+
+/* emoji input editable */
 .emoji-input{
-  width:62px;
-  height:62px;
+  width:68px;
+  height:68px;
   border-radius:12px;
   border:2px solid rgba(255,255,255,0.12);
   background:var(--white);
   text-align:center;
-  font-size:34px; /* bigger emojis for editing */
+  font-size:38px;
   line-height:1;
   cursor:text;
-  -webkit-appearance:none;
 }
-.emoji-input:focus{
-  outline:none;
-  box-shadow:0 0 0 4px rgba(193,151,81,0.18);
-  border-color:var(--gold);
-}
+.emoji-input:focus{ outline:none; box-shadow:0 0 0 6px rgba(193,151,81,0.14); border-color:var(--gold); }
 
-/* Quick emoji buttons */
-.quick-emoji{
-  display:flex;
-  gap:8px;
-  justify-content:center;
-}
-.emoji-btn.quick{
-  width:52px;
-  height:52px;
-  border-radius:12px;
-  border:3px solid transparent;
-  background:var(--white);
-  font-size:28px;
-  cursor:pointer;
-}
-
-/* Color pickers stylised: remove inner black border and make rounded */
+/* color-pickers stylised (remove inner black border on WebKit) */
 .color-picker{
   -webkit-appearance:none;
   appearance:none;
-  width:62px;
-  height:62px;
+  width:68px;
+  height:68px;
   border-radius:12px;
   border:2px solid transparent;
   cursor:pointer;
   padding:0;
   background:#fff;
 }
-.color-picker::-webkit-color-swatch-wrapper { padding:0; border-radius:12px; }
-.color-picker::-webkit-color-swatch { border:none; border-radius:12px; }
+.color-picker::-webkit-color-swatch-wrapper{ padding:0; border-radius:12px; }
+.color-picker::-webkit-color-swatch{ border:none; border-radius:12px; }
 
 /* Editor hints */
-.editor-hint{
-  font-size:13px;
-  color:rgba(255,255,255,0.85);
-  margin:0;
-}
+.editor-hint{ font-size:13px; color:rgba(255,255,255,0.9); margin:0; }
 
 /* Actions */
-.actions{
-  display:flex;
-  gap:12px;
-  margin-top:8px;
-}
-.primary{
-  background:var(--gold);
-  color:var(--bg);
-  border:none;
-  padding:12px 18px;
-  border-radius:12px;
-  font-weight:600;
-  font-size:16px;
-  cursor:pointer;
-}
-.primary:hover{filter:brightness(.95)}
-.secondary{
-  background:transparent;
-  color:var(--white);
-  border:2px solid rgba(255,255,255,0.12);
-  padding:10px 14px;
-  border-radius:12px;
-  cursor:pointer;
-}
+.actions{ display:flex; gap:12px; margin-top:8px; }
+.primary{ background:var(--gold); color:var(--bg); border:none; padding:12px 18px; border-radius:12px; font-weight:600; font-size:16px; cursor:pointer; }
+.secondary{ background:transparent; color:var(--white); border:2px solid rgba(255,255,255,0.12); padding:10px 14px; border-radius:12px; cursor:pointer; }
 
 /* instruction */
-.instruction{
-  margin-top:8px;
-  color:rgba(255,255,255,0.85);
-  font-size:14px;
-}
+.instruction{ margin-top:8px; color:rgba(255,255,255,0.85); font-size:14px; }
 
-/* Days grid */
-.days-container{
-  margin-top:18px;
-  width:100%;
-  display:flex;
-  justify-content:center;
-}
-.grid{
-  display:grid;
-  gap:12px;
-  justify-content:center;
-}
+/* Days grid container */
+.days-container{ margin-top:18px; width:100%; display:flex; justify-content:center; }
+.grid{ display:grid; gap:12px; justify-content:center; }
 
-/* Desktop: 7 columns x 3 rows */
-@media (min-width:720px){
-  .grid{ grid-template-columns: repeat(7, 88px); }
-}
-/* Mobile: 3 columns x 7 rows */
-@media (max-width:719px){
-  .grid{ grid-template-columns: repeat(3, 88px); }
-}
+/* Desktop 7 cols */
+@media (min-width:720px){ .grid{ grid-template-columns: repeat(7, 88px); } }
+/* Mobile 3 cols */
+@media (max-width:719px){ .grid{ grid-template-columns: repeat(3, 88px); } }
 
 .dayBox{
-  width:88px;
-  height:88px;
-  border-radius:14px;
-  background:var(--white);
-  color:var(--bg);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  font-size:28px; /* big so emoji and text match menu size */
-  cursor:pointer;
-  border:3px solid rgba(255,255,255,0.12); /* subtle default border */
-  position:relative;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-  text-align:center;
-  padding:6px;
-  word-break:break-word;
+  width:88px; height:88px; border-radius:14px;
+  background:var(--white); color:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:28px; cursor:pointer;
+  border:3px solid rgba(255,255,255,0.12);
+  box-shadow:0 2px 6px rgba(0,0,0,0.12);
+  text-align:center; padding:6px; word-break:break-word;
 }
 
 /* Selected box: thicker gold liseré */
-.dayBox.selected{
-  box-shadow:0 6px 18px rgba(0,0,0,0.25);
-  border:4px solid var(--gold); /* twice as thick than before */
-}
+.dayBox.selected{ box-shadow:0 6px 18px rgba(0,0,0,0.25); border:4px solid var(--gold); }
+/* colored background -> ensure white text */
+.dayBox.colored{ color:#fff; }
 
-/* When day contains colored background, ensure emoji/text is white for contrast */
-.dayBox.colored { color: #ffffff; }
+/* Editor selection highlight */
+.emoji-input.selected, .color-picker.selected{ outline:4px solid rgba(193,151,81,0.18); box-shadow:0 6px 12px rgba(0,0,0,0.15); border-color:var(--gold); }
 
-/* Editor selection highlight (selected input/button) use gold outline */
-.emoji-input.selected, .color-picker.selected, .emoji-btn.quick.selected{
-  outline:4px solid rgba(193,151,81,0.22);
-  box-shadow:0 6px 12px rgba(0,0,0,0.15);
-  border-color: var(--gold);
-}
-
-/* hide things when class hidden applied */
-.hidden { display:none !important; }
-
-/* small helpers for PDF */
-@media print{ .no-print{display:none} }
+/* Hidden helper */
+.hidden{ display:none !important; }
