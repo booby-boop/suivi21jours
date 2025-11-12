@@ -1,54 +1,63 @@
 const DAYS = 21;
 const daysDiv = document.getElementById('days');
-const emojiMenu = document.getElementById('emojiMenu');
-const setupForm = document.getElementById('setupForm');
-const dateError = document.getElementById('dateError');
+const selectionMenu = document.getElementById('selectionMenu');
+const colorChoices = document.getElementById('colorChoices');
+const emojiChoices = document.getElementById('emojiChoices');
+const useColors = document.getElementById('useColors');
+const useEmojis = document.getElementById('useEmojis');
+const startDateInput = document.getElementById('startDateInput');
+const generateBtn = document.getElementById('generateDays');
+
 let currentDayBox = null;
 
-// Validation du formulaire
-setupForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const startDate = document.getElementById('startDate').value;
+// afficher les options selon les cases cochées
+function updateMenuOptions() {
+  colorChoices.classList.toggle('hidden', !useColors.checked);
+  emojiChoices.classList.toggle('hidden', !useEmojis.checked);
+}
+useColors.addEventListener('change', updateMenuOptions);
+useEmojis.addEventListener('change', updateMenuOptions);
 
-  if (!startDate) {
-    dateError.textContent = "Merci de sélectionner une date avant de commencer ✨";
+// générer les jours
+generateBtn.addEventListener('click', () => {
+  const startDate = new Date(startDateInput.value);
+  if (isNaN(startDate)) {
+    alert("Merci de choisir une date de départ !");
     return;
   }
-
-  setupForm.classList.add('hidden');
-  daysDiv.classList.remove('hidden');
-  createDays();
-});
-
-// Création des 21 jours
-function createDays() {
-  for (let i = 1; i <= DAYS; i++) {
+  daysDiv.innerHTML = '';
+  for (let i = 0; i < DAYS; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
     const box = document.createElement('div');
     box.className = 'dayBox';
-    box.textContent = `Jour ${i}`;
+    box.dataset.date = date.toLocaleDateString('fr-FR');
+    box.textContent = box.dataset.date;
     box.addEventListener('click', () => {
       currentDayBox = box;
-      emojiMenu.classList.remove('hidden');
+      selectionMenu.classList.remove('hidden');
+      updateMenuOptions();
     });
     daysDiv.appendChild(box);
   }
-}
+});
 
-// Sélection d’un émoji
-document.querySelectorAll('.emoji-grid button').forEach(btn => {
+// appliquer couleur
+document.querySelectorAll('.color-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (currentDayBox) currentDayBox.textContent = btn.textContent;
-    emojiMenu.classList.add('hidden');
+    if (currentDayBox) {
+      currentDayBox.style.backgroundColor = btn.style.backgroundColor;
+      selectionMenu.classList.add('hidden');
+    }
   });
 });
 
-// Sélection d’une couleur
-document.querySelectorAll('.color-grid button').forEach(btn => {
+// appliquer émoji
+document.querySelectorAll('.emoji-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (currentDayBox) {
-      currentDayBox.style.background = btn.style.background;
-      currentDayBox.textContent = '';
+      currentDayBox.textContent = btn.textContent;
+      selectionMenu.classList.add('hidden');
     }
-    emojiMenu.classList.add('hidden');
   });
 });
