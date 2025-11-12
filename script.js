@@ -1,4 +1,3 @@
-// script.js — clean, robust implementation
 document.addEventListener('DOMContentLoaded', () => {
   const DAYS = 21;
   const startDateEl = document.getElementById('startDate');
@@ -17,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentDay = null;
   let gridGenerated = false;
 
-  // initialize flatpickr
+  // Flatpickr init
   if (typeof flatpickr === 'function') {
     flatpickr(startDateEl, {
       dateFormat: "d/m/Y",
@@ -29,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
           fp.calendarContainer.style.borderRadius = "12px";
           fp.calendarContainer.style.border = "2px solid #c19751";
           fp.calendarContainer.style.background = "#2b2f5a";
-          // ensure day text white
+          fp.calendarContainer.style.color = "#fff";
           fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => d.style.color = '#fff');
         }
       }
@@ -55,15 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
   radioEls.forEach(r => r.addEventListener('change', showEditors));
   showEditors();
 
-  // helper to set box appearance (font size, colored class)
+  // helper to set box appearance (emoji bigger, date smaller ~ -10px)
   function updateBoxAppearance(box) {
     const txt = (box.textContent || '').trim();
     const isEmoji = /\p{Emoji}/u.test(txt) || (txt.length <= 3 && /[^\w\d\s]/u.test(txt));
     if (isEmoji) {
-      box.style.fontSize = '34px';
+      box.style.fontSize = '38px'; // same as palette
       box.style.lineHeight = '1';
     } else {
-      box.style.fontSize = '14px';
+      box.style.fontSize = '28px'; // date smaller (~10px less than emoji)
       box.style.lineHeight = '1.1';
     }
     if (box.style.background && box.style.background !== 'white' && box.style.background !== '#ffffff') {
@@ -82,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const startRaw = startDateEl.value;
     let startDate = null;
     if (startRaw) {
-      // parse d/m/Y or yyyy-mm-dd
       if (startRaw.includes('/')) {
         const parts = startRaw.split('/');
         startDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
@@ -107,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         box.dataset.label = label;
       }
 
-      // select day on click
       box.addEventListener('click', () => {
         dayBoxes.forEach(b => b.classList.remove('selected'));
         box.classList.add('selected');
@@ -122,17 +119,16 @@ document.addEventListener('DOMContentLoaded', () => {
     gridGenerated = true;
     captureBtn.classList.remove('hidden');
 
-    // after grid created, freeze palette inputs (disable editing) but create small clickable palette overlays that apply value
+    // freeze palette inputs and replace editors by overlays to avoid visual duplication
     emojiInputs.forEach(i => i.disabled = true);
     colorPickers.forEach(p => p.disabled = true);
 
-    // create overlays (remove if exist)
     createPaletteOverlays();
   }
 
-  // create palette overlays (clickable buttons showing current palette values)
+  // create palette overlays (apply-only)
   function createPaletteOverlays() {
-    // remove existing overlays if present
+    // remove existing overlays
     const existingEmojiOverlay = document.getElementById('emojiPaletteOverlay');
     if (existingEmojiOverlay) existingEmojiOverlay.remove();
     const existingColorOverlay = document.getElementById('colorPaletteOverlay');
@@ -150,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
       b.style.height = '68px';
       b.style.borderRadius = '12px';
       b.style.border = '4px solid transparent';
-      b.style.fontSize = '34px';
+      b.style.fontSize = '38px';
       b.textContent = inp.value || '';
       b.addEventListener('click', () => {
         if (!currentDay) { alert('Clique d\'abord sur un jour.'); return; }
@@ -185,16 +181,16 @@ document.addEventListener('DOMContentLoaded', () => {
       colorOverlay.appendChild(b);
     });
 
-    // insert overlays after editors
-    emojiEditor.after(emojiOverlay);
-    colorEditor.after(colorOverlay);
+    // place overlays: replace editable editors visually (hide editors and insert overlays)
+    emojiEditor.classList.add('hidden');
+    colorEditor.classList.add('hidden');
 
-    // make overlays visible (palettes are fixed after generation but overlays are clickable)
-    emojiOverlay.classList.remove('hidden');
-    colorOverlay.classList.remove('hidden');
+    // insert overlays where editors were (after the form)
+    configForm.parentNode.insertBefore(emojiOverlay, daysContainer);
+    configForm.parentNode.insertBefore(colorOverlay, daysContainer);
   }
 
-  // capture grid as PNG via html2canvas
+  // capture grid
   async function captureGrid() {
     if (!gridGenerated) return alert('Génère la grille d\'abord.');
     try {
@@ -210,17 +206,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // form submit: generate or reset
+  // form submit
   configForm.addEventListener('submit', (ev) => {
     ev.preventDefault();
     if (!gridGenerated) {
-      // generate grid
       createGrid();
       generateBtn.textContent = 'Réinitialiser';
     } else {
-      // reset with confirmation
       if (!confirm("Es-tu sûr de vouloir réinitialiser ?")) return;
-      // reset UI
+      // reset
       daysContainer.innerHTML = '';
       dayBoxes = [];
       gridGenerated = false;
@@ -230,25 +224,18 @@ document.addEventListener('DOMContentLoaded', () => {
       // remove overlays
       const eo = document.getElementById('emojiPaletteOverlay'); if (eo) eo.remove();
       const co = document.getElementById('colorPaletteOverlay'); if (co) co.remove();
-      // re-enable palette inputs
+      // re-enable editors & show them
       emojiInputs.forEach(i => i.disabled = false);
       colorPickers.forEach(p => p.disabled = false);
       showEditors();
+      // restore editors visible
+      emojiEditor.classList.remove('hidden');
+      colorEditor.classList.remove('hidden');
     }
   });
 
-  // apply emoji input Enter to current day while editing BEFORE generation (live edit)
+  // live preview before generation: typing in emoji inputs or choosing color updates the currently selected day
   emojiInputs.forEach(inp => {
-    inp.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        if (currentDay && !gridGenerated) {
-          currentDay.textContent = inp.value || currentDay.dataset.label || '';
-          updateBoxAppearance(currentDay);
-        }
-      }
-    });
-    // live preview if day selected and before generation
     inp.addEventListener('input', () => {
       if (currentDay && !gridGenerated) {
         currentDay.textContent = inp.value || currentDay.dataset.label || '';
@@ -256,10 +243,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
-  // color pickers live preview before generation
   colorPickers.forEach(p => {
     p.addEventListener('input', () => {
       if (currentDay && !gridGenerated) {
         currentDay.style.background = p.value;
-        currentDay.classList
+        currentDay.classList.add('colored');
+        updateBoxAppearance(currentDay);
+      }
+    });
+  });
+
+  captureBtn.addEventListener('click', captureGrid);
+
+});
