@@ -7,7 +7,7 @@
   --dark:#1d1d1b;
 }
 
-*{box-sizing:border-box}
+*{ box-sizing:border-box; }
 body{
   margin:0;
   font-family:"Montserrat",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
@@ -72,7 +72,7 @@ h1{ margin:0 0 12px 0; font-size:1.6rem; line-height:1.1; }
   border-radius:12px;
   font-weight:600;
   font-size:16px;
-  font-family:"Montserrat",sans-serif; /* typo Montserrat */
+  font-family:"Montserrat",sans-serif;
   cursor:pointer;
 }
 .secondary{
@@ -81,7 +81,7 @@ h1{ margin:0 0 12px 0; font-size:1.6rem; line-height:1.1; }
   border:2px solid rgba(255,255,255,0.12);
   padding:10px 14px;
   border-radius:12px;
-  font-family:"Montserrat",sans-serif; /* typo Montserrat */
+  font-family:"Montserrat",sans-serif;
   cursor:pointer;
 }
 
@@ -93,15 +93,23 @@ h1{ margin:0 0 12px 0; font-size:1.6rem; line-height:1.1; }
 @media (max-width:719px){ .grid{ grid-template-columns: repeat(3, 88px); } }
 
 .dayBox{
-  width:88px; height:88px; border-radius:14px;
-  background:var(--white); color:var(--dark);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:88px; 
+  height:88px; 
+  border-radius:14px;
+  background:var(--white); 
+  color:var(--dark);
+  display:flex; 
+  flex-direction:column; /* emoji/texte au-dessus, date en dessous */
+  align-items:center; 
+  justify-content:center;
   font-weight:700;
-  font-size: clamp(10px, 1.2vw, 18px);
+  font-size: clamp(10px, 1.2vw, 18px); /* texte normal */
   cursor:pointer;
   border:3px solid rgba(255,255,255,0.12);
   box-shadow:0 2px 6px rgba(0,0,0,0.12);
-  text-align:center; padding:6px; word-break:break-word;
+  text-align:center; 
+  padding:6px; 
+  word-break:break-word;
 }
 
 .dayBox .mainContent { font-size:34px; line-height:1; }
@@ -111,7 +119,6 @@ h1{ margin:0 0 12px 0; font-size:1.6rem; line-height:1.1; }
 .dayBox.colored{ color:#fff; }
 
 /* emojis */
-.dayBox[data-type="emoji"]{ font-size:34px; line-height:1; }
+.dayBox[data-type="emoji"] .mainContent{ font-size:34px; line-height:1; }
 
 .hidden{ display:none !important; }
-
