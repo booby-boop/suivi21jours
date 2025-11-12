@@ -1,39 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Vision 21 Jours</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Vision 21 Jours</h1>
-    <p>
-      Cet outil te permet de symboliser chaque jour la <strong>tendance de ta journée</strong> par une couleur ou un émoji.<br>
+  <main class="container">
+    <h1>Bienvenue dans ta <strong>Vision 21 Jours</strong> !</h1>
+
+    <p class="intro">
+      Cet outil te permet de <strong>symboliser chaque jour la tendance de ta journée</strong> par une couleur ou un émoji.<br>
       Tu peux choisir jusqu’à cinq éléments (pour conserver une vue claire et équilibrée) — <strong>couleurs et/ou émojis</strong> — et créer ton <strong>code symbolique personnel</strong>.<br>
       Cette <strong>vision</strong> t’aidera à observer les variations sur <strong>21 jours</strong>, et à identifier ce que tu souhaites explorer ou mettre en lumière dans ton quotidien.
     </p>
 
-    <div class="controls">
-      <input type="date" id="startDate" placeholder="Date de départ">
-      <div class="radio-group">
-        <label><input type="radio" name="typeSelect" value="emoji"> Emoji</label>
-        <label><input type="radio" name="typeSelect" value="color"> Couleurs</label>
-        <label><input type="radio" name="typeSelect" value="both"> Les deux</label>
+    <form id="configForm" class="config" autocomplete="off">
+      <input id="startDate" class="custom-date" placeholder="Date de départ" />
+
+      <div class="radio-group" role="radiogroup" aria-label="Mode">
+        <label class="radio-label"><input type="radio" name="mode" value="emoji"> Émojis</label>
+        <label class="radio-label"><input type="radio" name="mode" value="color"> Couleurs</label>
+        <label class="radio-label"><input type="radio" name="mode" value="both"> Les deux</label>
       </div>
-    </div>
 
-    <div id="paletteContainer" class="palette-container"></div>
+      <!-- emoji palette -->
+      <div id="emojiEditor" class="editor hidden">
+        <div class="editor-row">
+          <input class="emoji-input" maxlength="2" value="🏆" title="Tape ou colle un emoji" />
+          <input class="emoji-input" maxlength="2" value="🌞" />
+          <input class="emoji-input" maxlength="2" value="❤️" />
+          <input class="emoji-input" maxlength="2" value="🌩️" />
+          <input class="emoji-input" maxlength="2" value="⭐" />
+        </div>
+        <p class="editor-hint">Personnalise d'abord tes emojis.</p>
+      </div>
 
-    <button id="generateBtn">Générer les 21 jours</button>
-    <button id="downloadBtn">Télécharger la grille</button>
+      <!-- color palette -->
+      <div id="colorEditor" class="editor hidden">
+        <div class="editor-row">
+          <input type="color" class="color-picker" value="#1d1d1b" />
+          <input type="color" class="color-picker" value="#e6007e" />
+          <input type="color" class="color-picker" value="#c19751" />
+          <input type="color" class="color-picker" value="#00a19a" />
+          <input type="color" class="color-picker" value="#36a9e1" />
+        </div>
+        <p class="editor-hint">Personnalise d'abord tes couleurs.</p>
+      </div>
 
-    <p id="instructionText" class="instruction-text"></p>
+      <div class="actions">
+        <button id="generateBtn" class="primary" type="submit">Générer les 21 jours</button>
+        <button id="captureBtn" class="secondary hidden" type="button">Capturer la grille</button>
+      </div>
+    </form>
 
-    <div id="gridContainer" class="grid-container"></div>
-  </div>
+    <p id="instructionText" class="instruction hidden">Clique sur un jour pour le sélectionner, puis clique sur une couleur ou un emoji pour le faire apparaître.</p>
+
+    <section id="daysContainer" class="days-container grid" aria-live="polite"></section>
+  </main>
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script src="script.js"></script>
 </body>
