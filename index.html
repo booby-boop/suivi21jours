@@ -4,28 +4,21 @@
   <meta charset="UTF-8">
   <title>Vision 21 Jours</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Flatpickr CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  
-  <!-- Google Fonts Montserrat -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <h1>Bienvenue dans ta Vision 21 Jours !</h1>
   <p class="intro">
-    Cet outil te permet de symboliser chaque jour la <strong>tendance de ta journée</strong> par une couleur ou un émoji. 
-    Tu peux choisir jusqu’à cinq éléments (pour conserver une vue claire et équilibrée) — couleurs et/ou émojis — et créer ton <strong>code symbolique personnel</strong>. 
-    Cette <strong>vision</strong> t’aidera à observer les variations sur <strong>21 jours</strong> et à identifier ce que tu souhaites ajuster dans ton quotidien.
+    Cet outil te permet de <b>symboliser chaque jour la tendance de ta journée</b> par une couleur ou un émoji.
+    Tu peux choisir jusqu’à cinq éléments — <b>couleurs et/ou émojis</b> — et créer ton <b>code symbolique personnel</b>.
+    Cette <b>vision</b> t’aidera à observer les variations sur <b>21 jours</b>, et à identifier ce que tu souhaites ajuster dans ton quotidien.
   </p>
 
   <div class="form-section">
-    <input id="startDate" class="custom-date" placeholder="Cliquez pour afficher le calendrier">
+    <input type="text" id="startDate" placeholder="Date de départ">
     
-    <div class="selection-options">
-      <label><input type="radio" name="type" value="emoji"> Emojis</label>
-      <label><input type="radio" name="type" value="color"> Couleurs</label>
-      <label><input type="radio" name="type" value="both"> Les deux</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="useEmojis"> Emojis</label>
+      <label><input type="checkbox" id="useColors"> Couleurs</label>
     </div>
 
     <div id="emojiMenu" class="hidden">
@@ -37,20 +30,19 @@
     </div>
 
     <div id="colorMenu" class="hidden">
-      <input type="color" class="color-picker" value="#1d1d1b">
-      <input type="color" class="color-picker" value="#e6007e">
-      <input type="color" class="color-picker" value="#ffde00">
-      <input type="color" class="color-picker" value="#00a19a">
-      <input type="color" class="color-picker" value="#36a9e1">
+      <button class="color-btn" style="background:#1d1d1b"></button>
+      <button class="color-btn" style="background:#e6007e"></button>
+      <button class="color-btn" style="background:#ffde00"></button>
+      <button class="color-btn" style="background:#00a19a"></button>
+      <button class="color-btn" style="background:#36a9e1"></button>
     </div>
 
     <button id="generateBtn">Générer les 21 jours</button>
+    <button id="downloadBtn" class="hidden">Télécharger PDF</button>
   </div>
 
-  <div id="days"></div>
+  <div id="days" class="days-grid"></div>
 
-  <!-- Flatpickr JS -->
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="script.js"></script>
 </body>
 </html>
