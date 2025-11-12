@@ -1,4 +1,3 @@
-// script.js — clean, robust implementation
 document.addEventListener('DOMContentLoaded', () => {
   const DAYS = 21;
   const startDateEl = document.getElementById('startDate');
@@ -18,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentDay = null;
   let gridGenerated = false;
 
+  // flatpickr sur fond blanc
   if (typeof flatpickr === 'function') {
     flatpickr(startDateEl, {
       dateFormat: "d/m/Y",
@@ -28,27 +28,20 @@ document.addEventListener('DOMContentLoaded', () => {
           fp.calendarContainer.style.fontFamily = "Montserrat, sans-serif";
           fp.calendarContainer.style.borderRadius = "12px";
           fp.calendarContainer.style.border = "2px solid #c19751";
-          fp.calendarContainer.style.background = "#2b2f5a";
-          // tous les jours doivent rester blancs même après sélection
+          fp.calendarContainer.style.background = "#fff"; // fond blanc
           fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => {
-            d.style.color = '#fff';
+            d.style.color = '#000'; // texte noir
           });
         }
       },
-      onMonthChange: function(fp) { // garde les jours blancs après changement de mois
-        fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => {
-          d.style.color = '#fff';
-        });
+      onMonthChange: function(fp) {
+        fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => d.style.color = '#000');
       },
-      onYearChange: function(fp) { // garde les jours blancs après changement d'année
-        fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => {
-          d.style.color = '#fff';
-        });
+      onYearChange: function(fp) {
+        fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => d.style.color = '#000');
       },
-      onValueUpdate: function(fp) { // garde les jours blancs après sélection de date
-        fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => {
-          d.style.color = '#fff';
-        });
+      onValueUpdate: function(fp) {
+        fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => d.style.color = '#000');
       }
     });
   }
@@ -63,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateBoxAppearance(box) {
     const txt = (box.textContent || '').trim();
-    const isEmoji = /\p{Emoji}/u.test(txt) || (txt.length <= 3 && /[^\w\d\s]/u.test(txt));
+    const isEmoji = txt.length > 0 && /[^\w\d\s]/u.test(txt); // accepte tout caractère spécial comme emoji
     if (isEmoji) {
       box.style.fontSize = '34px';
       box.style.lineHeight = '1';
     } else {
-      box.style.fontSize = '18px'; // texte réduit
+      box.style.fontSize = '14px'; // texte réduit de 10px
       box.style.lineHeight = '1.1';
     }
     if (box.style.background && box.style.background !== 'white' && box.style.background !== '#ffffff') {
@@ -123,9 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiInputs.forEach(i => i.disabled = true);
     colorPickers.forEach(p => p.disabled = true);
 
-    // palette figée **remplace** palette éditable
-    emojiEditor.replaceWith(createEmojiOverlay());
-    colorEditor.replaceWith(createColorOverlay());
+    const mode = document.querySelector('input[name="mode"]:checked')?.value || '';
+    if (mode === 'emoji' || mode === 'both') {
+      emojiEditor.replaceWith(createEmojiOverlay());
+    } else if (document.getElementById('emojiPaletteOverlay')) {
+      document.getElementById('emojiPaletteOverlay').remove();
+    }
+
+    if (mode === 'color' || mode === 'both') {
+      colorEditor.replaceWith(createColorOverlay());
+    } else if (document.getElementById('colorPaletteOverlay')) {
+      document.getElementById('colorPaletteOverlay').remove();
+    }
   }
 
   function createEmojiOverlay() {
@@ -214,15 +216,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // correction emoji input : force la mise à jour de currentDay
+  // emoji input accepte maintenant tout caractère
   emojiInputs.forEach(inp => {
     inp.addEventListener('input', (ev) => {
       if (currentDay) {
-        const val = ev.target.value.trim();
-        if (val.length > 2) inp.value = val.slice(0, 2); // un seul emoji
-        currentDay.textContent = inp.value || currentDay.dataset.label || '';
+        currentDay.textContent = ev.target.value || currentDay.dataset.label || '';
         currentDay.dataset.type = 'emoji';
-        currentDay.dataset.value = inp.value || '';
+        currentDay.dataset.value = ev.target.value || '';
         updateBoxAppearance(currentDay);
       }
     });
