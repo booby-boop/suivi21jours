@@ -11,4 +11,39 @@
   <div class="container">
     <h1>Bienvenue dans ta Vision 21 Jours !</h1>
     <p>
-      Cet outil te permet de symboliser chaque jour la tendance de ta journée par une couleur ou un
+      Cet outil te permet de symboliser chaque jour la tendance de ta journée par une couleur ou un émoji.<br>
+      Tu peux choisir jusqu’à cinq éléments (pour conserver une vue claire et équilibrée) — couleurs et/ou émojis — et créer ton code symbolique personnel.<br>
+      Cette vision t’aidera à observer les variations sur 21 jours, et à identifier ce que tu souhaites explorer ou mettre en lumière dans ton quotidien.
+    </p>
+
+    <div class="controls">
+      <input type="date" id="start-date" placeholder="Date de départ">
+      
+      <div class="radio-group">
+        <label><input type="radio" name="mode" value="emoji"> Emoji</label>
+        <label><input type="radio" name="mode" value="color"> Couleurs</label>
+        <label><input type="radio" name="mode" value="both"> Les deux</label>
+      </div>
+
+      <div id="emoji-palette" class="palette hidden">
+        <p>Personnalise d'abord tes emojis :</p>
+        <div class="items"></div>
+      </div>
+
+      <div id="color-palette" class="palette hidden">
+        <p>Personnalise d'abord tes couleurs :</p>
+        <div class="items"></div>
+      </div>
+
+      <button id="generate-btn">Générer les 21 jours</button>
+      <button id="download-btn">Télécharger la grille</button>
+    </div>
+
+    <p id="instruction" class="hidden">Clique sur un jour pour le sélectionner, puis clique sur une couleur et/ou un emoji pour le faire apparaître.</p>
+
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
