@@ -24,7 +24,7 @@
     </p>
 
     <form id="configForm" class="config" autocomplete="off">
-      <!-- date field (Flatpickr will attach) -->
+      <!-- date field -->
       <input id="startDate" class="custom-date" placeholder="Date de départ" />
 
       <!-- radios -->
@@ -34,19 +34,19 @@
         <label class="radio-label"><input type="radio" name="mode" value="both"> Les deux</label>
       </div>
 
-      <!-- emoji palette (editable BEFORE generation) -->
+      <!-- emoji editor (editable BEFORE generation) -->
       <div id="emojiEditor" class="editor">
         <div class="editor-row">
-          <input class="emoji-input" maxlength="4" value="🏆" title="Tape ou colle un emoji" />
-          <input class="emoji-input" maxlength="4" value="🌞" />
-          <input class="emoji-input" maxlength="4" value="❤️" />
-          <input class="emoji-input" maxlength="4" value="🌩️" />
-          <input class="emoji-input" maxlength="4" value="⭐" />
+          <input class="emoji-input" maxlength="4" value="🏆" title="Emoji 1" />
+          <input class="emoji-input" maxlength="4" value="🌞" title="Emoji 2" />
+          <input class="emoji-input" maxlength="4" value="❤️" title="Emoji 3" />
+          <input class="emoji-input" maxlength="4" value="🌩️" title="Emoji 4" />
+          <input class="emoji-input" maxlength="4" value="⭐" title="Emoji 5" />
         </div>
-        <p class="editor-hint">Personnalise les émojis avant de générer (appuie Entrée pour appliquer à la case sélectionnée).</p>
+        <p class="editor-hint">Personnalise tes emojis</p>
       </div>
 
-      <!-- color palette (editable BEFORE generation) -->
+      <!-- color editor (editable BEFORE generation) -->
       <div id="colorEditor" class="editor hidden">
         <div class="editor-row">
           <input type="color" class="color-picker" value="#1d1d1b" />
@@ -55,21 +55,21 @@
           <input type="color" class="color-picker" value="#00a19a" />
           <input type="color" class="color-picker" value="#36a9e1" />
         </div>
-        <p class="editor-hint">Choisis jusqu'à 5 couleurs. Après génération, la palette sera figée.</p>
+        <p class="editor-hint">Personnalise tes couleurs</p>
       </div>
 
       <div class="actions">
         <button id="generateBtn" class="primary" type="submit">Générer les 21 jours</button>
-        <button id="captureBtn" class="secondary hidden" type="button">Capturer la grille (PNG)</button>
+        <button id="captureBtn" class="secondary hidden" type="button">Capturer la grille</button>
       </div>
     </form>
 
-    <p class="instruction">Clique sur un jour pour le sélectionner, puis clique sur un émoji ou une couleur (palettes figées après génération).</p>
+    <p class="instruction">Clique sur un jour pour le sélectionner, puis clique sur une couleur ou un émoji (palettes figées après génération).</p>
 
     <section id="daysContainer" class="days-container grid" aria-live="polite"></section>
   </main>
 
-  <!-- libs: Flatpickr then html2canvas -->
+  <!-- libs -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
