@@ -1,4 +1,4 @@
-// script.js — clean, robust implementation
+// script.js — version mise à jour avec persistance et corrections
 document.addEventListener('DOMContentLoaded', () => {
   const DAYS = 21;
   const startDateEl = document.getElementById('startDate');
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const daysContainer = document.getElementById('daysContainer');
   const generateBtn = document.getElementById('generateBtn');
   const captureBtn = document.getElementById('captureBtn');
-  const instructionP = document.querySelector('.instruction');
 
   const radioEls = Array.from(document.querySelectorAll('input[name="mode"]'));
   const emojiInputs = Array.from(document.querySelectorAll('.emoji-input'));
@@ -18,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentDay = null;
   let gridGenerated = false;
 
+  const STORAGE_KEY = "vision21Grille";
+
+  // initialize flatpickr
   if (typeof flatpickr === 'function') {
     flatpickr(startDateEl, {
       dateFormat: "d/m/Y",
@@ -35,40 +37,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // show editors depending on radio
   function showEditors() {
-    const mode = document.querySelector('input[name="mode"]:checked')?.value || '';
-    emojiEditor.classList.toggle('hidden', !(mode === 'emoji' || mode === 'both'));
-    colorEditor.classList.toggle('hidden', !(mode === 'color' || mode === 'both'));
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    if (mode === 'emoji') {
+      emojiEditor.classList.remove('hidden');
+      colorEditor.classList.add('hidden');
+    } else if (mode === 'color') {
+      colorEditor.classList.remove('hidden');
+      emojiEditor.classList.add('hidden');
+    } else {
+      emojiEditor.classList.remove('hidden');
+      colorEditor.classList.remove('hidden');
+    }
   }
   radioEls.forEach(r => r.addEventListener('change', showEditors));
   showEditors();
 
+  // helper to set box appearance (font size, colored class)
   function updateBoxAppearance(box) {
     const txt = (box.textContent || '').trim();
     const isEmoji = /\p{Emoji}/u.test(txt) || (txt.length <= 3 && /[^\w\d\s]/u.test(txt));
     if (isEmoji) {
       box.style.fontSize = '34px';
       box.style.lineHeight = '1';
+      box.dataset.type = 'emoji';
     } else {
-      box.style.fontSize = '18px'; // texte réduit
+      box.style.fontSize = 'clamp(10px, 1.2vw, 18px)';
       box.style.lineHeight = '1.1';
+      box.dataset.type = 'text';
     }
     if (box.style.background && box.style.background !== 'white' && box.style.background !== '#ffffff') {
       box.classList.add('colored');
       box.style.color = '#fff';
     } else {
       box.classList.remove('colored');
-      box.style.color = '#1d1d1d';
+      box.style.color = '#1d1d1b';
     }
   }
 
+  // create grid
   function createGrid() {
     daysContainer.innerHTML = '';
     dayBoxes = [];
+    const startRaw = startDateEl.value;
     let startDate = null;
-    if (startDateEl.value) {
-      const parts = startDateEl.value.split('/');
-      startDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    if (startRaw) {
+      if (startRaw.includes('/')) {
+        const parts = startRaw.split('/');
+        startDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      } else {
+        startDate = new Date(startRaw);
+      }
       if (isNaN(startDate.getTime())) startDate = null;
     }
 
@@ -87,6 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
         box.dataset.label = label;
       }
 
+      // restore saved values from localStorage
+      const saved = loadGrilleFromStorage();
+      if (saved && saved[i]) {
+        if (saved[i].type === 'emoji') {
+          box.textContent = saved[i].value;
+          box.dataset.type = 'emoji';
+        } else if (saved[i].type === 'color') {
+          box.style.background = saved[i].value;
+          box.dataset.type = 'color';
+          box.dataset.value = saved[i].value;
+        }
+        updateBoxAppearance(box);
+      }
+
       box.addEventListener('click', () => {
         dayBoxes.forEach(b => b.classList.remove('selected'));
         box.classList.add('selected');
@@ -100,17 +134,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gridGenerated = true;
     captureBtn.classList.remove('hidden');
-    instructionP.classList.remove('hidden');
 
+    // freeze palette inputs
     emojiInputs.forEach(i => i.disabled = true);
     colorPickers.forEach(p => p.disabled = true);
 
-    // palette figée **remplace** palette éditable
-    emojiEditor.replaceWith(createEmojiOverlay());
-    colorEditor.replaceWith(createColorOverlay());
+    createPaletteOverlays();
   }
 
-  function createEmojiOverlay() {
+  function createPaletteOverlays() {
+    const existingEmojiOverlay = document.getElementById('emojiPaletteOverlay');
+    if (existingEmojiOverlay) existingEmojiOverlay.remove();
+    const existingColorOverlay = document.getElementById('colorPaletteOverlay');
+    if (existingColorOverlay) existingColorOverlay.remove();
+
     const emojiOverlay = document.createElement('div');
     emojiOverlay.id = 'emojiPaletteOverlay';
     emojiOverlay.className = 'editor-row';
@@ -130,13 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'emoji';
         currentDay.dataset.value = b.textContent || '';
         updateBoxAppearance(currentDay);
+        saveGrilleToStorage();
       });
       emojiOverlay.appendChild(b);
     });
-    return emojiOverlay;
-  }
 
-  function createColorOverlay() {
     const colorOverlay = document.createElement('div');
     colorOverlay.id = 'colorPaletteOverlay';
     colorOverlay.className = 'editor-row';
@@ -155,10 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'color';
         currentDay.dataset.value = p.value;
         updateBoxAppearance(currentDay);
+        saveGrilleToStorage();
       });
       colorOverlay.appendChild(b);
     });
-    return colorOverlay;
+
+    emojiEditor.replaceWith(emojiOverlay);
+    colorEditor.replaceWith(colorOverlay);
   }
 
   async function captureGrid() {
@@ -189,14 +227,20 @@ document.addEventListener('DOMContentLoaded', () => {
       currentDay = null;
       generateBtn.textContent = 'Générer les 21 jours';
       captureBtn.classList.add('hidden');
-      instructionP.classList.add('hidden');
-      showEditors();
-      emojiInputs.forEach(i => i.disabled = false);
-      colorPickers.forEach(p => p.disabled = false);
+      localStorage.removeItem(STORAGE_KEY);
     }
   });
 
   emojiInputs.forEach(inp => {
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentDay && !gridGenerated) {
+          currentDay.textContent = inp.value || currentDay.dataset.label || '';
+          updateBoxAppearance(currentDay);
+        }
+      }
+    });
     inp.addEventListener('input', () => {
       if (currentDay && !gridGenerated) {
         currentDay.textContent = inp.value || currentDay.dataset.label || '';
@@ -216,4 +260,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   captureBtn.addEventListener('click', captureGrid);
+
+  // --- localStorage helpers ---
+  function saveGrilleToStorage() {
+    const data = dayBoxes.map(b => ({
+      type: b.dataset.type || 'text',
+      value: b.dataset.type === 'color' ? b.dataset.value : b.textContent
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function loadGrilleFromStorage() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  // on load: restore saved grid
+  if (loadGrilleFromStorage().length > 0) {
+    createGrid();
+    generateBtn.textContent = 'Réinitialiser';
+  }
 });
