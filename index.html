@@ -1,78 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vision 21 Jours</title>
-
-  <!-- Montserrat -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-
-  <!-- Flatpickr CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <main class="container">
-    <h1>Bienvenue dans ta <strong>Vision 21 Jours</strong> !</h1>
-
-    <p class="intro">
-      Cet outil te permet de <strong>symboliser chaque jour la tendance de ta journée</strong> par une couleur ou un émoji.<br>
-      Tu peux choisir jusqu’à cinq éléments (pour conserver une vue claire et équilibrée) — <strong>couleurs et/ou émojis</strong> — et créer ton <strong>code symbolique personnel</strong>.<br>
-      Cette <strong>vision</strong> t’aidera à observer les variations sur <strong>21 jours</strong>, et à identifier ce que tu souhaites explorer ou mettre en lumière dans ton quotidien.
-    </p>
-
-    <form id="configForm" class="config" autocomplete="off">
-      <!-- date field -->
-      <input id="startDate" class="custom-date" placeholder="Date de départ" />
-
-      <!-- radios -->
-      <div class="radio-group" role="radiogroup" aria-label="Mode">
-        <label class="radio-label"><input type="radio" name="mode" value="emoji" checked> Émojis</label>
-        <label class="radio-label"><input type="radio" name="mode" value="color"> Couleurs</label>
-        <label class="radio-label"><input type="radio" name="mode" value="both"> Les deux</label>
-      </div>
-
-      <!-- emoji editor (editable BEFORE generation) -->
-      <div id="emojiEditor" class="editor">
-        <div class="editor-row">
-          <input class="emoji-input" maxlength="4" value="🏆" title="Emoji 1" />
-          <input class="emoji-input" maxlength="4" value="🌞" title="Emoji 2" />
-          <input class="emoji-input" maxlength="4" value="❤️" title="Emoji 3" />
-          <input class="emoji-input" maxlength="4" value="🌩️" title="Emoji 4" />
-          <input class="emoji-input" maxlength="4" value="⭐" title="Emoji 5" />
-        </div>
-        <p class="editor-hint">Personnalise tes emojis</p>
-      </div>
-
-      <!-- color editor (editable BEFORE generation) -->
-      <div id="colorEditor" class="editor hidden">
-        <div class="editor-row">
-          <input type="color" class="color-picker" value="#1d1d1b" />
-          <input type="color" class="color-picker" value="#e6007e" />
-          <input type="color" class="color-picker" value="#ffde00" />
-          <input type="color" class="color-picker" value="#00a19a" />
-          <input type="color" class="color-picker" value="#36a9e1" />
-        </div>
-        <p class="editor-hint">Personnalise tes couleurs</p>
-      </div>
-
-      <div class="actions">
-        <button id="generateBtn" class="primary" type="submit">Générer les 21 jours</button>
-        <button id="captureBtn" class="secondary hidden" type="button">Capturer la grille</button>
-      </div>
-    </form>
-
-    <p class="instruction">Clique sur un jour pour le sélectionner, puis clique sur une couleur ou un émoji (palettes figées après génération).</p>
-
-    <section id="daysContainer" class="days-container grid" aria-live="polite"></section>
-  </main>
-
-  <!-- libs -->
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-  <script src="script.js"></script>
-</body>
-</html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision 21 Jours</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #2b2f5a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+  }
+  .instructions {
+    margin: 10px 0;
+    text-align: center;
+  }
+  .input-group {
+    margin: 15px 0;
+    text-align: center;
+  }
+  input[type="date"] {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    padding: 8px 12px;
+    border: 2px solid gold;
+    border-radius: 10px;
+    background-color: #2b2f5a;
+    color: white;
+    font-size: 16px;
+  }
+  .palette-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 10px 0;
+    gap: 10px;
+  }
+  .color-square, .emoji-square {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid white
