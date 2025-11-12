@@ -8,8 +8,46 @@
 <body>
   <h1>Ma Vision 21 jours</h1>
 
+  <!-- Introduction -->
+  <div id="intro">
+    <p>Bienvenue dans votre <strong>Vision 21 Jours</strong>. Pendant 21 jours, vous allez prendre un moment chaque jour pour symboliser un événement important de votre journée, ou ce que vous en retenez le plus.</p>
+    <p>Pour cela, vous pouvez choisir jusqu'à 5 éléments sous forme d’émojis ou de couleurs prédéfinies. Cette pratique vous aidera à prendre du recul et à observer vos tendances ou émotions.</p>
+  </div>
+
+  <!-- Formulaire de configuration -->
+  <div id="configForm">
+    <label for="startDate">Date de début :</label>
+    <input type="date" id="startDate">
+
+    <p>Choisissez votre mode de symbolisation :</p>
+    <input type="radio" id="modeEmoji" name="mode" value="emoji" checked>
+    <label for="modeEmoji">Émojis</label>
+    <input type="radio" id="modeColor" name="mode" value="color">
+    <label for="modeColor">Couleurs</label>
+
+    <div id="emojiInputs">
+      <p>Personnalisez vos 5 émojis :</p>
+      <input type="text" id="emojiInput1" maxlength="2" value="🏆">
+      <input type="text" id="emojiInput2" maxlength="2" value="🌞">
+      <input type="text" id="emojiInput3" maxlength="2" value="❤️">
+      <input type="text" id="emojiInput4" maxlength="2" value="🌩️">
+      <input type="text" id="emojiInput5" maxlength="2" value="⭐">
+    </div>
+
+    <div id="colorInputs" class="hidden">
+      <p>Choisissez vos couleurs :</p>
+      <input type="color" id="color1" value="#000000">
+      <input type="color" id="color2" value="#ff0000">
+      <input type="color" id="color3" value="#ffff00">
+      <input type="color" id="color4" value="#00ff00">
+      <input type="color" id="color5" value="#ff99cc">
+    </div>
+
+    <button id="startBtn">Commencer ma Vision 21 Jours</button>
+  </div>
+
   <!-- Container des jours -->
-  <div id="days"></div>
+  <div id="days" class="hidden"></div>
 
   <!-- Menu emojis -->
   <div id="emojiMenu" class="hidden">
