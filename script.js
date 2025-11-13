@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dayBoxes = [];
     currentDay = null;
 
-    // date de départ
+    // --- restaurer date ---
     let startDate = null;
     if (savedData?.startDate) {
       startDate = parseDate(savedData.startDate);
@@ -101,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
       dateEl.className = 'dateLabel';
       box.appendChild(dateEl);
 
-      // assigner date
       if (startDate) {
         const d = new Date(startDate.getTime() + i * 24 * 3600 * 1000);
         const label = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
@@ -114,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         box.dataset.label = label;
       }
 
-      // restaurer les données sauvegardées
+      // restaurer données sauvegardées
       if (savedData?.days?.[i]) {
         const dayData = savedData.days[i];
         if (dayData.type === 'emoji') contentEl.textContent = dayData.value;
@@ -139,12 +138,21 @@ document.addEventListener('DOMContentLoaded', () => {
     captureBtn.classList.remove('hidden');
     instructionP.classList.remove('hidden');
 
-    // désactiver les radios seulement si grille générée
+    // --- désactiver radios après génération ---
     radioEls.forEach(r => r.disabled = true);
 
     removeOverlays();
 
-    // overlays
+    // --- restaurer palettes personnalisées ---
+    if (savedData) {
+      emojiInputs.forEach((inp, idx) => {
+        inp.value = savedData.emojiInputs?.[idx] || inp.value;
+      });
+      colorPickers.forEach((p, idx) => {
+        p.value = savedData.colorPickers?.[idx] || p.value;
+      });
+    }
+
     const mode = savedData?.mode || document.querySelector('input[name="mode"]:checked')?.value || '';
     if (mode === 'emoji' || mode === 'both') overlayEmoji();
     if (mode === 'color' || mode === 'both') overlayColor();
@@ -282,6 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = {
       startDate: startDateEl.value || null,
       days: dayBoxes.map(b => ({ type: b.dataset.type || '', value: b.dataset.value || '' })),
+      emojiInputs: emojiInputs.map(i => i.value),
+      colorPickers: colorPickers.map(c => c.value),
       mode: mode || document.querySelector('input[name="mode"]:checked')?.value || 'both'
     };
     localStorage.setItem('vision21Data', JSON.stringify(data));
@@ -300,7 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function parseDate(input) {
-    // si input est ISO (localStorage) ou format dd/mm/yyyy
     let d = new Date(input);
     if (!isNaN(d.getTime())) return d;
     const parts = input.split('/');
