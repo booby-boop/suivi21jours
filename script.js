@@ -50,15 +50,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Mise à jour apparence d'une box ---
   function updateBoxAppearance(box) {
     const contentEl = box.querySelector('.mainContent');
-    const txt = contentEl?.textContent.trim() || '';
-    const isEmoji = txt.length > 0 && /[^\w\d\s]/u.test(txt);
+    const txt = box.dataset.emoji || '';
+    const isEmoji = txt.length > 0;
 
     if (contentEl) {
+      contentEl.textContent = box.dataset.emoji || '';
       contentEl.style.fontSize = isEmoji ? '34px' : '14px';
       contentEl.style.lineHeight = isEmoji ? '1' : '1.1';
     }
 
-    if (box.style.background && box.style.background !== 'white' && box.style.background !== '#ffffff') {
+    box.style.background = box.dataset.color || 'white';
+
+    if (box.dataset.color && box.dataset.color !== 'white' && box.dataset.color !== '#ffffff') {
       box.classList.add('colored');
       box.style.color = '#fff';
     } else {
@@ -116,15 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // restaurer données sauvegardées
       if (savedData?.days?.[i]) {
         const dayData = savedData.days[i];
-        if (dayData.type === 'emoji') {
-          contentEl.textContent = dayData.value;
-        }
-        if (dayData.type === 'color') {
-          box.style.background = dayData.value;
-          updateBoxAppearance(box); // <-- fix : la couleur s'affiche correctement
-        }
-        box.dataset.type = dayData.type || '';
-        box.dataset.value = dayData.value || '';
+        box.dataset.emoji = dayData.emoji || '';
+        box.dataset.color = dayData.color || '';
+        updateBoxAppearance(box);
       }
 
       box.addEventListener('click', () => {
@@ -185,10 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent = inp.value;
       btn.addEventListener('click', () => {
         if (!currentDay) return alert('Clique d\'abord sur un jour.');
-        const contentEl = currentDay.querySelector('.mainContent');
-        contentEl.textContent = btn.textContent;
-        currentDay.dataset.type = 'emoji';
-        currentDay.dataset.value = btn.textContent;
+        currentDay.dataset.emoji = btn.textContent;
         updateBoxAppearance(currentDay);
         saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
@@ -214,9 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.style.background = p.value;
       btn.addEventListener('click', () => {
         if (!currentDay) return alert('Clique d\'abord sur un jour.');
-        currentDay.style.background = p.value;
-        currentDay.dataset.type = 'color';
-        currentDay.dataset.value = p.value;
+        currentDay.dataset.color = p.value;
         updateBoxAppearance(currentDay);
         saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
@@ -267,10 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiInputs.forEach(inp => {
       inp.addEventListener('input', ev => {
         if (!currentDay) return;
-        const contentEl = currentDay.querySelector('.mainContent');
-        contentEl.textContent = ev.target.value || '';
-        currentDay.dataset.type = 'emoji';
-        currentDay.dataset.value = ev.target.value || '';
+        currentDay.dataset.emoji = ev.target.value || '';
         updateBoxAppearance(currentDay);
         saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
@@ -279,9 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     colorPickers.forEach(p => {
       p.addEventListener('input', () => {
         if (!currentDay) return;
-        currentDay.style.background = p.value;
-        currentDay.dataset.type = 'color';
-        currentDay.dataset.value = p.value;
+        currentDay.dataset.color = p.value || '';
         updateBoxAppearance(currentDay);
         saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
@@ -294,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function saveToLocalStorage(mode = null) {
     const data = {
       startDate: startDateEl.value || null,
-      days: dayBoxes.map(b => ({ type: b.dataset.type || '', value: b.dataset.value || '' })),
+      days: dayBoxes.map(b => ({ emoji: b.dataset.emoji || '', color: b.dataset.color || '' })),
       emojiInputs: emojiInputs.map(i => i.value),
       colorPickers: colorPickers.map(c => c.value),
       mode: mode || document.querySelector('input[name="mode"]:checked')?.value || 'both'
