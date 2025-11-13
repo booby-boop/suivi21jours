@@ -67,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Palette remplie ? ---
   function isPaletteFilled() {
     return emojiInputs.some(i => i.value.trim() !== '') || colorPickers.some(c => c.value.trim() !== '');
   }
@@ -84,12 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // date de départ
     let startDate = null;
     if (savedData?.startDate) {
-      startDate = new Date(savedData.startDate);
+      startDate = parseDate(savedData.startDate);
       startDateEl.value = formatDateForInput(startDate);
     } else if (startDateEl.value) {
-      const parts = startDateEl.value.split('/');
-      startDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-      if (isNaN(startDate.getTime())) startDate = null;
+      startDate = parseDate(startDateEl.value);
     }
 
     for (let i = 0; i < DAYS; i++) {
@@ -142,22 +139,22 @@ document.addEventListener('DOMContentLoaded', () => {
     captureBtn.classList.remove('hidden');
     instructionP.classList.remove('hidden');
 
+    // désactiver les radios seulement si grille générée
     radioEls.forEach(r => r.disabled = true);
-    emojiInputs.forEach(i => i.disabled = true);
-    colorPickers.forEach(p => p.disabled = true);
 
     removeOverlays();
 
-    const mode = document.querySelector('input[name="mode"]:checked')?.value || '';
+    // overlays
+    const mode = savedData?.mode || document.querySelector('input[name="mode"]:checked')?.value || '';
     if (mode === 'emoji' || mode === 'both') overlayEmoji();
     if (mode === 'color' || mode === 'both') overlayColor();
 
-    attachInputListeners(); // réattacher les listeners après restauration
+    attachInputListeners();
+    generateBtn.textContent = 'Réinitialiser';
 
-    saveToLocalStorage();
+    saveToLocalStorage(mode);
   }
 
-  // --- Overlay emojis ---
   function overlayEmoji() {
     const overlay = document.createElement('div');
     overlay.id = 'emojiPaletteOverlay';
@@ -180,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'emoji';
         currentDay.dataset.value = btn.textContent;
         updateBoxAppearance(currentDay);
-        saveToLocalStorage();
+        saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
       overlay.appendChild(btn);
     });
@@ -188,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiEditor = document.getElementById('emojiPaletteOverlay');
   }
 
-  // --- Overlay couleurs ---
   function overlayColor() {
     const overlay = document.createElement('div');
     overlay.id = 'colorPaletteOverlay';
@@ -209,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'color';
         currentDay.dataset.value = p.value;
         updateBoxAppearance(currentDay);
-        saveToLocalStorage();
+        saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
       overlay.appendChild(btn);
     });
@@ -224,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (oldColorOverlay) oldColorOverlay.remove();
   }
 
-  // --- Capture ---
   async function captureGrid() {
     if (!gridGenerated) return alert('Génère la grille d\'abord.');
     try {
@@ -240,25 +235,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Réinitialisation ---
   function resetApp() {
     localStorage.removeItem('vision21Data');
     location.reload();
   }
 
-  // --- Soumission formulaire ---
   configForm.addEventListener('submit', ev => {
     ev.preventDefault();
     if (!gridGenerated) {
       createGrid();
-      generateBtn.textContent = 'Réinitialiser';
     } else {
       if (!confirm("Es-tu sûr de vouloir réinitialiser ?")) return;
       resetApp();
     }
   });
 
-  // --- Inputs directs ---
   function attachInputListeners() {
     emojiInputs.forEach(inp => {
       inp.addEventListener('input', ev => {
@@ -268,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'emoji';
         currentDay.dataset.value = ev.target.value || '';
         updateBoxAppearance(currentDay);
-        saveToLocalStorage();
+        saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
     });
 
@@ -279,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'color';
         currentDay.dataset.value = p.value;
         updateBoxAppearance(currentDay);
-        saveToLocalStorage();
+        saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
       });
     });
   }
@@ -287,11 +278,11 @@ document.addEventListener('DOMContentLoaded', () => {
   attachInputListeners();
   captureBtn.addEventListener('click', captureGrid);
 
-  // --- LocalStorage ---
-  function saveToLocalStorage() {
+  function saveToLocalStorage(mode = null) {
     const data = {
       startDate: startDateEl.value || null,
-      days: dayBoxes.map(b => ({ type: b.dataset.type || '', value: b.dataset.value || '' }))
+      days: dayBoxes.map(b => ({ type: b.dataset.type || '', value: b.dataset.value || '' })),
+      mode: mode || document.querySelector('input[name="mode"]:checked')?.value || 'both'
     };
     localStorage.setItem('vision21Data', JSON.stringify(data));
   }
@@ -301,7 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data) createGrid(JSON.parse(data));
   }
 
-  // --- Utils ---
   function formatDateForInput(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -309,6 +299,17 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${day}/${month}/${year}`;
   }
 
-  // --- Initialisation ---
+  function parseDate(input) {
+    // si input est ISO (localStorage) ou format dd/mm/yyyy
+    let d = new Date(input);
+    if (!isNaN(d.getTime())) return d;
+    const parts = input.split('/');
+    if (parts.length === 3) {
+      d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      if (!isNaN(d.getTime())) return d;
+    }
+    return null;
+  }
+
   loadFromLocalStorage();
 });
