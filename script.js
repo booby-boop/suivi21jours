@@ -74,6 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return emojiInputs.some(i => i.value.trim() !== '') || colorPickers.some(c => c.value.trim() !== '');
   }
 
+  // --- Fonction pour récupérer l'emoji complet ---
+  function getFullEmoji(str) {
+    if (!str) return '';
+    // Utilisation de grapheme-splitter pour prendre tout l'emoji complet
+    // ou fallback simple : on prend la première séquence entière
+    return [...str][0] || '';
+  }
+
   // --- Création grille ---
   function createGrid(savedData = null) {
     if (!isPaletteFilled() && !savedData) return alert("Tu dois choisir au moins un emoji ou une couleur avant de générer la grille !");
@@ -166,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.className = 'editor-row';
     emojiInputs.forEach(inp => {
       if (!inp.value) return;
-      const fullChar = Array.from(inp.value)[0];
+      const fullChar = getFullEmoji(inp.value);
       if (!fullChar) return;
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -257,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiInputs.forEach(inp => {
       inp.addEventListener('input', ev => {
         if (!currentDay) return;
-        const fullChar = Array.from(ev.target.value)[0] || '';
+        const fullChar = getFullEmoji(ev.target.value);
         currentDay.dataset.emoji = fullChar;
         updateBoxAppearance(currentDay);
         saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
