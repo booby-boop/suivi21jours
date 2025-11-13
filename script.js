@@ -76,16 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Création grille ---
-  function createGrid() {
-    if (!isPaletteFilled()) return alert("Tu dois choisir au moins un emoji ou une couleur avant de générer la grille !");
+  function createGrid(savedData = null) {
+    if (!isPaletteFilled() && !savedData) return alert("Tu dois choisir au moins un emoji ou une couleur avant de générer la grille !");
 
-    // reset avant création
     daysContainer.innerHTML = '';
     dayBoxes = [];
     currentDay = null;
 
     let startDate = null;
-    if (startDateEl.value) {
+    if (savedData?.startDate) {
+      startDate = new Date(savedData.startDate);
+      startDateEl.value = formatDateForInput(startDate);
+    } else if (startDateEl.value) {
       const parts = startDateEl.value.split('/');
       startDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
       if (isNaN(startDate.getTime())) startDate = null;
@@ -106,15 +108,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (startDate) {
         const d = new Date(startDate.getTime() + i * 24 * 3600 * 1000);
         const label = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
-        contentEl.textContent = '';
         dateEl.textContent = label;
         box.dataset.label = label;
         box.dataset.date = d.toISOString();
       } else {
         const label = `Jour ${i + 1}`;
-        contentEl.textContent = '';
         dateEl.textContent = label;
         box.dataset.label = label;
+      }
+
+      if (savedData?.days?.[i]) {
+        const dayData = savedData.days[i];
+        if (dayData.type === 'emoji') contentEl.textContent = dayData.value;
+        if (dayData.type === 'color') box.style.background = dayData.value;
+        box.dataset.type = dayData.type || '';
+        box.dataset.value = dayData.value || '';
       }
 
       box.addEventListener('click', () => {
@@ -142,6 +150,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const mode = document.querySelector('input[name="mode"]:checked')?.value || '';
     if (mode === 'emoji' || mode === 'both') overlayEmoji();
     if (mode === 'color' || mode === 'both') overlayColor();
+
+    saveToLocalStorage();
   }
 
   // --- Overlay emojis ---
@@ -167,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'emoji';
         currentDay.dataset.value = btn.textContent;
         updateBoxAppearance(currentDay);
+        saveToLocalStorage();
       });
       overlay.appendChild(btn);
     });
@@ -195,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'color';
         currentDay.dataset.value = p.value;
         updateBoxAppearance(currentDay);
+        saveToLocalStorage();
       });
       overlay.appendChild(btn);
     });
@@ -227,37 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Réinitialisation complète ---
   function resetApp() {
-    daysContainer.innerHTML = '';
-    dayBoxes = [];
-    currentDay = null;
-    gridGenerated = false;
-    generateBtn.textContent = 'Générer les 21 jours';
-    captureBtn.classList.add('hidden');
-    instructionP.classList.add('hidden');
-    startDateEl.value = '';
-
-    // recréer les éditeurs originaux
-    emojiEditor.replaceWith(createElementFromHTML(emojiTemplateHTML));
-    colorEditor.replaceWith(createElementFromHTML(colorTemplateHTML));
-    emojiEditor = document.getElementById('emojiEditor');
-    colorEditor = document.getElementById('colorEditor');
-
-    emojiInputs = Array.from(document.querySelectorAll('.emoji-input'));
-    colorPickers = Array.from(document.querySelectorAll('.color-picker'));
-
-    // réactiver radios et inputs
-    radioEls.forEach(r => r.disabled = false);
-    emojiInputs.forEach(i => i.disabled = false);
-    colorPickers.forEach(p => p.disabled = false);
-
-    showEditors();
-    attachInputListeners();
-  }
-
-  function createElementFromHTML(htmlString) {
-    const div = document.createElement('div');
-    div.innerHTML = htmlString.trim();
-    return div.firstChild;
+    localStorage.removeItem('vision21Data');
+    location.reload();
   }
 
   // --- Soumission formulaire ---
@@ -282,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'emoji';
         currentDay.dataset.value = ev.target.value || '';
         updateBoxAppearance(currentDay);
+        saveToLocalStorage();
       });
     });
 
@@ -292,10 +276,34 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDay.dataset.type = 'color';
         currentDay.dataset.value = p.value;
         updateBoxAppearance(currentDay);
+        saveToLocalStorage();
       });
     });
   }
   attachInputListeners();
 
   captureBtn.addEventListener('click', captureGrid);
+
+  // --- LocalStorage ---
+  function saveToLocalStorage() {
+    const data = {
+      startDate: startDateEl.value || null,
+      days: dayBoxes.map(b => ({ type: b.dataset.type || '', value: b.dataset.value || '' }))
+    };
+    localStorage.setItem('vision21Data', JSON.stringify(data));
+  }
+
+  function loadFromLocalStorage() {
+    const data = localStorage.getItem('vision21Data');
+    if (data) createGrid(JSON.parse(data));
+  }
+
+  function formatDateForInput(date) {
+    const day = String(date.getDate()).padStart(2,'0');
+    const month = String(date.getMonth()+1).padStart(2,'0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  loadFromLocalStorage();
 });
