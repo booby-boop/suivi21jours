@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Affichage des éditeurs ---
+  // --- Affichage éditeurs ---
   function showEditors() {
     const mode = document.querySelector('input[name="mode"]:checked')?.value || '';
     emojiEditor.classList.toggle('hidden', !(mode === 'emoji' || mode === 'both'));
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Vérifier si palette remplie ---
+  // --- Palette remplie ? ---
   function isPaletteFilled() {
     return emojiInputs.some(i => i.value.trim() !== '') || colorPickers.some(c => c.value.trim() !== '');
   }
@@ -79,10 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function createGrid(savedData = null) {
     if (!isPaletteFilled() && !savedData) return alert("Tu dois choisir au moins un emoji ou une couleur avant de générer la grille !");
 
+    // reset
     daysContainer.innerHTML = '';
     dayBoxes = [];
     currentDay = null;
 
+    // date de départ
     let startDate = null;
     if (savedData?.startDate) {
       startDate = new Date(savedData.startDate);
@@ -105,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dateEl.className = 'dateLabel';
       box.appendChild(dateEl);
 
+      // assigner date
       if (startDate) {
         const d = new Date(startDate.getTime() + i * 24 * 3600 * 1000);
         const label = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
@@ -117,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         box.dataset.label = label;
       }
 
+      // restaurer les données sauvegardées
       if (savedData?.days?.[i]) {
         const dayData = savedData.days[i];
         if (dayData.type === 'emoji') contentEl.textContent = dayData.value;
@@ -237,9 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Réinitialisation complète ---
+  // --- Réinitialisation ---
   function resetApp() {
     localStorage.removeItem('vision21Data');
+    // Recharger la page en état vierge
     location.reload();
   }
 
@@ -298,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data) createGrid(JSON.parse(data));
   }
 
+  // --- Utils ---
   function formatDateForInput(date) {
     const day = String(date.getDate()).padStart(2,'0');
     const month = String(date.getMonth()+1).padStart(2,'0');
@@ -305,5 +311,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${day}/${month}/${year}`;
   }
 
+  // --- Initialisation ---
   loadFromLocalStorage();
 });
