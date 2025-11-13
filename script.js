@@ -18,13 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentDay = null;
   let gridGenerated = false;
 
-  // --- rendre le placeholder visible si Flatpickr interfère ---
-  if (startDateEl) {
-    startDateEl.setAttribute('placeholder', 'Date de départ');
-  }
-
   // --- flatpickr ---
   if (typeof flatpickr === 'function') {
+    const label = document.createElement('label');
+    label.setAttribute('for', 'startDate');
+    label.textContent = 'Date de départ';
+    label.style.display = 'block';
+    label.style.marginBottom = '4px';
+    label.style.fontWeight = '600';
+    label.style.fontFamily = 'Montserrat, sans-serif';
+    label.style.color = '#1d1d1d';
+    startDateEl.parentNode.insertBefore(label, startDateEl);
+
     flatpickr(startDateEl, {
       dateFormat: "d/m/Y",
       allowInput: true,
@@ -41,6 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+
+    startDateEl.style.width = '100%';
+    startDateEl.style.minWidth = '180px';
+    startDateEl.style.fontSize = '16px';
+    startDateEl.style.padding = '8px 10px';
+    startDateEl.style.borderRadius = '8px';
+    startDateEl.style.border = '2px solid #c19751';
+    startDateEl.style.fontFamily = 'Montserrat, sans-serif';
   }
 
   // --- Affichage éditeurs ---
@@ -62,13 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
       contentEl.textContent = box.dataset.emoji || '';
       contentEl.style.fontSize = isEmoji ? '34px' : '14px';
       contentEl.style.lineHeight = isEmoji ? '1' : '1.1';
-      contentEl.style.display = 'block';
-      contentEl.style.textAlign = 'center';
-      contentEl.style.width = '100%';
     }
 
     box.style.background = box.dataset.color || 'white';
-
     if (box.dataset.color && box.dataset.color !== 'white' && box.dataset.color !== '#ffffff') {
       box.classList.add('colored');
       box.style.color = '#fff';
@@ -86,16 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function createGrid(savedData = null) {
     if (!isPaletteFilled() && !savedData) return alert("Tu dois choisir au moins un emoji ou une couleur avant de générer la grille !");
 
-    // reset
     daysContainer.innerHTML = '';
     dayBoxes = [];
     currentDay = null;
 
-    // --- restaurer date ---
     let startDate = null;
     if (savedData?.startDate) {
       startDate = parseDate(savedData.startDate);
-      startDateEl.value = startDate ? formatDateForInput(startDate) : '';
+      startDateEl.value = formatDateForInput(startDate);
     } else if (startDateEl.value) {
       startDate = parseDate(startDateEl.value);
     }
@@ -124,16 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
         box.dataset.label = label;
       }
 
-      // restaurer données sauvegardées
       if (savedData?.days?.[i]) {
         const dayData = savedData.days[i];
         box.dataset.emoji = dayData.emoji || '';
         box.dataset.color = dayData.color || '';
-        updateBoxAppearance(box); // met à jour l'affichage immédiatement
+        updateBoxAppearance(box);
       }
 
-      // --- IMPORTANT : on **n'empêche plus** la sélection du jour ; on sélectionne d'abord la case ---
       box.addEventListener('click', () => {
+        if (!isPaletteFilled()) return alert("Choisis au moins un emoji ou une couleur avant de sélectionner un jour !");
         dayBoxes.forEach(b => b.classList.remove('selected'));
         box.classList.add('selected');
         currentDay = box;
@@ -147,13 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
     gridGenerated = true;
     captureBtn.classList.remove('hidden');
     instructionP.classList.remove('hidden');
-
-    // --- désactiver radios après génération ---
     radioEls.forEach(r => r.disabled = true);
 
     removeOverlays();
 
-    // --- restaurer palettes personnalisées ---
     if (savedData) {
       emojiInputs.forEach((inp, idx) => {
         inp.value = savedData.emojiInputs?.[idx] || inp.value;
@@ -169,36 +172,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     attachInputListeners();
     generateBtn.textContent = 'Réinitialiser';
-
     saveToLocalStorage(mode);
   }
 
-  // --- Overlay emojis (taille & centrage pour éviter demi-emoji) ---
+  // --- Palette emojis et couleurs ---
   function overlayEmoji() {
     const overlay = document.createElement('div');
     overlay.id = 'emojiPaletteOverlay';
     overlay.className = 'editor-row';
+    overlay.style.display = 'flex';
+    overlay.style.flexWrap = 'wrap';
+    overlay.style.gap = '6px';
+
     emojiInputs.forEach(inp => {
       if (!inp.value) return;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'emoji-btn quick-palette';
-
-      // styles pour éviter demi-emoji : centrer et line-height = taille
-      btn.style.width = '68px';
-      btn.style.height = '68px';
-      btn.style.minWidth = '48px';
+      btn.style.width = '72px';
+      btn.style.height = '72px';
       btn.style.borderRadius = '12px';
-      btn.style.border = '4px solid transparent';
+      btn.style.border = '3px solid transparent';
+      btn.style.fontSize = '38px';
+      btn.style.lineHeight = '1.1';
       btn.style.display = 'flex';
       btn.style.alignItems = 'center';
       btn.style.justifyContent = 'center';
-
-      // taille responsive de l'emoji, calcule un nombre sûr entre 28 et 48
-      const base = Math.max(28, Math.min(48, Math.floor(window.innerWidth * 0.08)));
-      btn.style.fontSize = `${base}px`;
-      btn.style.lineHeight = '1';
-
+      btn.style.overflow = 'hidden';
       btn.textContent = inp.value;
       btn.addEventListener('click', () => {
         if (!currentDay) return alert('Clique d\'abord sur un jour.');
@@ -212,21 +212,23 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiEditor = document.getElementById('emojiPaletteOverlay');
   }
 
-  // --- Overlay couleurs ---
   function overlayColor() {
     const overlay = document.createElement('div');
     overlay.id = 'colorPaletteOverlay';
     overlay.className = 'editor-row';
+    overlay.style.display = 'flex';
+    overlay.style.flexWrap = 'wrap';
+    overlay.style.gap = '6px';
+
     colorPickers.forEach(p => {
       if (!p.value) return;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'color-btn quick-palette';
-      btn.style.width = '68px';
-      btn.style.height = '68px';
-      btn.style.minWidth = '48px';
+      btn.style.width = '72px';
+      btn.style.height = '72px';
       btn.style.borderRadius = '12px';
-      btn.style.border = '4px solid transparent';
+      btn.style.border = '3px solid transparent';
       btn.style.background = p.value;
       btn.addEventListener('click', () => {
         if (!currentDay) return alert('Clique d\'abord sur un jour.');
@@ -245,4 +247,94 @@ document.addEventListener('DOMContentLoaded', () => {
     if (oldEmojiOverlay) oldEmojiOverlay.remove();
     const oldColorOverlay = document.getElementById('colorPaletteOverlay');
     if (oldColorOverlay) oldColorOverlay.remove();
-    // tenter de retrouver les éditeurs
+  }
+
+  async function captureGrid() {
+    if (!gridGenerated) return alert('Génère la grille d\'abord.');
+    try {
+      dayBoxes.forEach(b => b.classList.remove('selected'));
+      const canvas = await html2canvas(daysContainer, { backgroundColor: null, useCORS: true, scale: 2 });
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = 'vision-21-jours.png';
+      link.click();
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de la capture. Réessaie.');
+    }
+  }
+
+  function resetApp() {
+    localStorage.removeItem('vision21Data');
+    location.reload();
+  }
+
+  configForm.addEventListener('submit', ev => {
+    ev.preventDefault();
+    if (!gridGenerated) {
+      createGrid();
+    } else {
+      if (!confirm("Es-tu sûr de vouloir réinitialiser ?")) return;
+      resetApp();
+    }
+  });
+
+  function attachInputListeners() {
+    emojiInputs.forEach(inp => {
+      inp.addEventListener('input', ev => {
+        if (!currentDay) return;
+        currentDay.dataset.emoji = ev.target.value || '';
+        updateBoxAppearance(currentDay);
+        saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
+      });
+    });
+
+    colorPickers.forEach(p => {
+      p.addEventListener('input', () => {
+        if (!currentDay) return;
+        currentDay.dataset.color = p.value || '';
+        updateBoxAppearance(currentDay);
+        saveToLocalStorage(document.querySelector('input[name="mode"]:checked')?.value || 'both');
+      });
+    });
+  }
+
+  attachInputListeners();
+  captureBtn.addEventListener('click', captureGrid);
+
+  function saveToLocalStorage(mode = null) {
+    const data = {
+      startDate: startDateEl.value || null,
+      days: dayBoxes.map(b => ({ emoji: b.dataset.emoji || '', color: b.dataset.color || '' })),
+      emojiInputs: emojiInputs.map(i => i.value),
+      colorPickers: colorPickers.map(c => c.value),
+      mode: mode || document.querySelector('input[name="mode"]:checked')?.value || 'both'
+    };
+    localStorage.setItem('vision21Data', JSON.stringify(data));
+  }
+
+  function loadFromLocalStorage() {
+    const data = localStorage.getItem('vision21Data');
+    if (data) createGrid(JSON.parse(data));
+  }
+
+  function formatDateForInput(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  function parseDate(input) {
+    let d = new Date(input);
+    if (!isNaN(d.getTime())) return d;
+    const parts = input.split('/');
+    if (parts.length === 3) {
+      d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      if (!isNaN(d.getTime())) return d;
+    }
+    return null;
+  }
+
+  loadFromLocalStorage();
+});
