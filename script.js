@@ -2,16 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const DAYS = 21;
   const startDateEl = document.getElementById('startDate');
   const configForm = document.getElementById('configForm');
-  const emojiEditor = document.getElementById('emojiEditor');
-  const colorEditor = document.getElementById('colorEditor');
   const daysContainer = document.getElementById('daysContainer');
   const generateBtn = document.getElementById('generateBtn');
   const captureBtn = document.getElementById('captureBtn');
   const instructionP = document.querySelector('.instruction');
 
   const radioEls = Array.from(document.querySelectorAll('input[name="mode"]'));
-  const emojiInputs = Array.from(document.querySelectorAll('.emoji-input'));
-  const colorPickers = Array.from(document.querySelectorAll('.color-picker'));
+  let emojiEditor = document.getElementById('emojiEditor');
+  let colorEditor = document.getElementById('colorEditor');
+
+  const emojiTemplateHTML = emojiEditor.outerHTML;
+  const colorTemplateHTML = colorEditor.outerHTML;
+
+  let emojiInputs = Array.from(document.querySelectorAll('.emoji-input'));
+  let colorPickers = Array.from(document.querySelectorAll('.color-picker'));
 
   let dayBoxes = [];
   let currentDay = null;
@@ -31,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
           fp.calendarContainer.style.borderRadius = "12px";
           fp.calendarContainer.style.border = "2px solid #c19751";
           fp.calendarContainer.style.background = "#fff";
-          fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => d.style.color = '#00008B'); // bleu foncé
+          fp.calendarContainer.querySelectorAll('.flatpickr-day').forEach(d => d.style.color = '#00008B');
         }
       }
     });
@@ -133,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiInputs.forEach(i => i.disabled = true);
     colorPickers.forEach(p => p.disabled = true);
 
-    // suppression overlays
     removeOverlays();
 
     const mode = document.querySelector('input[name="mode"]:checked')?.value || '';
@@ -168,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.appendChild(btn);
     });
     emojiEditor.replaceWith(overlay);
+    emojiEditor = document.getElementById('emojiPaletteOverlay');
   }
 
   // --- Overlay couleurs ---
@@ -195,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
       overlay.appendChild(btn);
     });
     colorEditor.replaceWith(overlay);
+    colorEditor = document.getElementById('colorPaletteOverlay');
   }
 
   function removeOverlays() {
@@ -220,6 +225,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // --- Réinitialisation complète ---
+  function resetApp() {
+    daysContainer.innerHTML = '';
+    dayBoxes = [];
+    currentDay = null;
+    gridGenerated = false;
+    generateBtn.textContent = 'Générer les 21 jours';
+    captureBtn.classList.add('hidden');
+    instructionP.classList.add('hidden');
+    startDateEl.value = '';
+
+    // recréer les éditeurs originaux
+    emojiEditor.replaceWith(createElementFromHTML(emojiTemplateHTML));
+    colorEditor.replaceWith(createElementFromHTML(colorTemplateHTML));
+    emojiEditor = document.getElementById('emojiEditor');
+    colorEditor = document.getElementById('colorEditor');
+
+    emojiInputs = Array.from(document.querySelectorAll('.emoji-input'));
+    colorPickers = Array.from(document.querySelectorAll('.color-picker'));
+
+    // réactiver radios et inputs
+    radioEls.forEach(r => r.disabled = false);
+    emojiInputs.forEach(i => i.disabled = false);
+    colorPickers.forEach(p => p.disabled = false);
+
+    showEditors();
+    attachInputListeners();
+  }
+
+  function createElementFromHTML(htmlString) {
+    const div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    return div.firstChild;
+  }
+
   // --- Soumission formulaire ---
   configForm.addEventListener('submit', ev => {
     ev.preventDefault();
@@ -228,50 +268,34 @@ document.addEventListener('DOMContentLoaded', () => {
       generateBtn.textContent = 'Réinitialiser';
     } else {
       if (!confirm("Es-tu sûr de vouloir réinitialiser ?")) return;
-
-      // reset complet
-      daysContainer.innerHTML = '';
-      dayBoxes = [];
-      currentDay = null;
-      gridGenerated = false;
-      generateBtn.textContent = 'Générer les 21 jours';
-      captureBtn.classList.add('hidden');
-      instructionP.classList.add('hidden');
-      startDateEl.value = '';
-
-      // reset inputs
-      emojiInputs.forEach(i => { i.disabled = false; i.value = ''; });
-      colorPickers.forEach(p => { p.disabled = false; });
-      radioEls.forEach(r => r.disabled = false);
-
-      // supprimer overlays
-      removeOverlays();
-
-      showEditors();
+      resetApp();
     }
   });
 
-  // --- Input direct ---
-  emojiInputs.forEach(inp => {
-    inp.addEventListener('input', ev => {
-      if (!currentDay) return;
-      const contentEl = currentDay.querySelector('.mainContent');
-      contentEl.textContent = ev.target.value || '';
-      currentDay.dataset.type = 'emoji';
-      currentDay.dataset.value = ev.target.value || '';
-      updateBoxAppearance(currentDay);
+  // --- Inputs directs ---
+  function attachInputListeners() {
+    emojiInputs.forEach(inp => {
+      inp.addEventListener('input', ev => {
+        if (!currentDay) return;
+        const contentEl = currentDay.querySelector('.mainContent');
+        contentEl.textContent = ev.target.value || '';
+        currentDay.dataset.type = 'emoji';
+        currentDay.dataset.value = ev.target.value || '';
+        updateBoxAppearance(currentDay);
+      });
     });
-  });
 
-  colorPickers.forEach(p => {
-    p.addEventListener('input', () => {
-      if (!currentDay) return;
-      currentDay.style.background = p.value;
-      currentDay.dataset.type = 'color';
-      currentDay.dataset.value = p.value;
-      updateBoxAppearance(currentDay);
+    colorPickers.forEach(p => {
+      p.addEventListener('input', () => {
+        if (!currentDay) return;
+        currentDay.style.background = p.value;
+        currentDay.dataset.type = 'color';
+        currentDay.dataset.value = p.value;
+        updateBoxAppearance(currentDay);
+      });
     });
-  });
+  }
+  attachInputListeners();
 
   captureBtn.addEventListener('click', captureGrid);
 });
